@@ -1,0 +1,2548 @@
+
+
+After reviewing the Billboard Top 100 for the year 2000 there are many interesting observations to share. After reviewing the dataset for cleanliness, in terms of duplicate songs or artists, I thought it would be interesting to see which genres, and songs, and artists were #1 in 2010. After answering those questions, I thought “I wonder if there is a correlation between the length of songs and how long they lasted on the Billboard Top 100? In other words, does a shorter or longer track mean the song will more or less popular?
+I started my analysis by loading the data into my programming environment and viewing the dataset:
+```python
+data = pd.read_csv('billboard.csv')
+data
+```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th>time</th>
+      <th>genre</th>
+      <th>date.entered</th>
+      <th>date.peaked</th>
+      <th>x1st.week</th>
+      <th>x2nd.week</th>
+      <th>x3rd.week</th>
+      <th>...</th>
+      <th>x67th.week</th>
+      <th>x68th.week</th>
+      <th>x69th.week</th>
+      <th>x70th.week</th>
+      <th>x71st.week</th>
+      <th>x72nd.week</th>
+      <th>x73rd.week</th>
+      <th>x74th.week</th>
+      <th>x75th.week</th>
+      <th>x76th.week</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2000</td>
+      <td>Destiny's Child</td>
+      <td>Independent Women Part I</td>
+      <td>3:38</td>
+      <td>Rock</td>
+      <td>2000-09-23</td>
+      <td>2000-11-18</td>
+      <td>78</td>
+      <td>63</td>
+      <td>49</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2000</td>
+      <td>Santana</td>
+      <td>Maria, Maria</td>
+      <td>4:18</td>
+      <td>Rock</td>
+      <td>2000-02-12</td>
+      <td>2000-04-08</td>
+      <td>15</td>
+      <td>8</td>
+      <td>6</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2000</td>
+      <td>Savage Garden</td>
+      <td>I Knew I Loved You</td>
+      <td>4:07</td>
+      <td>Rock</td>
+      <td>1999-10-23</td>
+      <td>2000-01-29</td>
+      <td>71</td>
+      <td>48</td>
+      <td>43</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>2000</td>
+      <td>Madonna</td>
+      <td>Music</td>
+      <td>3:45</td>
+      <td>Rock</td>
+      <td>2000-08-12</td>
+      <td>2000-09-16</td>
+      <td>41</td>
+      <td>23</td>
+      <td>18</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>2000</td>
+      <td>Aguilera, Christina</td>
+      <td>Come On Over Baby (All I Want Is You)</td>
+      <td>3:38</td>
+      <td>Rock</td>
+      <td>2000-08-05</td>
+      <td>2000-10-14</td>
+      <td>57</td>
+      <td>47</td>
+      <td>45</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>2000</td>
+      <td>Janet</td>
+      <td>Doesn't Really Matter</td>
+      <td>4:17</td>
+      <td>Rock</td>
+      <td>2000-06-17</td>
+      <td>2000-08-26</td>
+      <td>59</td>
+      <td>52</td>
+      <td>43</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>2000</td>
+      <td>Destiny's Child</td>
+      <td>Say My Name</td>
+      <td>4:31</td>
+      <td>Rock</td>
+      <td>1999-12-25</td>
+      <td>2000-03-18</td>
+      <td>83</td>
+      <td>83</td>
+      <td>44</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>2000</td>
+      <td>Iglesias, Enrique</td>
+      <td>Be With You</td>
+      <td>3:36</td>
+      <td>Latin</td>
+      <td>2000-04-01</td>
+      <td>2000-06-24</td>
+      <td>63</td>
+      <td>45</td>
+      <td>34</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>2000</td>
+      <td>Sisqo</td>
+      <td>Incomplete</td>
+      <td>3:52</td>
+      <td>Rock</td>
+      <td>2000-06-24</td>
+      <td>2000-08-12</td>
+      <td>77</td>
+      <td>66</td>
+      <td>61</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2000</td>
+      <td>Lonestar</td>
+      <td>Amazed</td>
+      <td>4:25</td>
+      <td>Country</td>
+      <td>1999-06-05</td>
+      <td>2000-03-04</td>
+      <td>81</td>
+      <td>54</td>
+      <td>44</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>2000</td>
+      <td>N'Sync</td>
+      <td>It's Gonna Be Me</td>
+      <td>3:10</td>
+      <td>Rock</td>
+      <td>2000-05-06</td>
+      <td>2000-07-29</td>
+      <td>82</td>
+      <td>70</td>
+      <td>51</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>2000</td>
+      <td>Aguilera, Christina</td>
+      <td>What A Girl Wants</td>
+      <td>3:18</td>
+      <td>Rock</td>
+      <td>1999-11-27</td>
+      <td>2000-01-15</td>
+      <td>71</td>
+      <td>51</td>
+      <td>28</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>2000</td>
+      <td>Vertical Horizon</td>
+      <td>Everything You Want</td>
+      <td>4:01</td>
+      <td>Rock</td>
+      <td>2000-01-22</td>
+      <td>2000-07-15</td>
+      <td>70</td>
+      <td>61</td>
+      <td>53</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>2000</td>
+      <td>Creed</td>
+      <td>With Arms Wide Open</td>
+      <td>3:52</td>
+      <td>Rock</td>
+      <td>2000-05-13</td>
+      <td>2000-11-11</td>
+      <td>84</td>
+      <td>78</td>
+      <td>76</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>2000</td>
+      <td>Aaliyah</td>
+      <td>Try Again</td>
+      <td>4:03</td>
+      <td>Rock</td>
+      <td>2000-03-18</td>
+      <td>2000-06-17</td>
+      <td>59</td>
+      <td>53</td>
+      <td>38</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>2000</td>
+      <td>matchbox twenty</td>
+      <td>Bent</td>
+      <td>4:12</td>
+      <td>Rock</td>
+      <td>2000-04-29</td>
+      <td>2000-07-22</td>
+      <td>60</td>
+      <td>37</td>
+      <td>29</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>2000</td>
+      <td>Carey, Mariah</td>
+      <td>Thank God I Found You</td>
+      <td>4:14</td>
+      <td>Rock</td>
+      <td>1999-12-11</td>
+      <td>2000-02-19</td>
+      <td>82</td>
+      <td>68</td>
+      <td>50</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>2000</td>
+      <td>Hill, Faith</td>
+      <td>Breathe</td>
+      <td>4:04</td>
+      <td>Rap</td>
+      <td>1999-11-06</td>
+      <td>2000-04-22</td>
+      <td>81</td>
+      <td>68</td>
+      <td>62</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>2000</td>
+      <td>Mya</td>
+      <td>Case Of The Ex (Whatcha Gonna Do)</td>
+      <td>3:50</td>
+      <td>Rock</td>
+      <td>2000-08-19</td>
+      <td>2000-12-02</td>
+      <td>72</td>
+      <td>57</td>
+      <td>52</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>2000</td>
+      <td>Dream</td>
+      <td>He Loves U Not</td>
+      <td>3:43</td>
+      <td>Rock</td>
+      <td>2000-09-30</td>
+      <td>2000-12-30</td>
+      <td>99</td>
+      <td>92</td>
+      <td>81</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>2000</td>
+      <td>Braxton, Toni</td>
+      <td>He Wasn't Man Enough</td>
+      <td>4:21</td>
+      <td>Rock</td>
+      <td>2000-03-18</td>
+      <td>2000-05-06</td>
+      <td>63</td>
+      <td>55</td>
+      <td>48</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>2000</td>
+      <td>Anthony, Marc</td>
+      <td>You Sang To Me</td>
+      <td>3:50</td>
+      <td>Latin</td>
+      <td>2000-02-26</td>
+      <td>2000-06-03</td>
+      <td>77</td>
+      <td>54</td>
+      <td>50</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>2000</td>
+      <td>98</td>
+      <td>Give Me Just One Night (Una Noche)</td>
+      <td>3:24</td>
+      <td>Rock</td>
+      <td>2000-08-19</td>
+      <td>2000-09-30</td>
+      <td>51</td>
+      <td>39</td>
+      <td>34</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>2000</td>
+      <td>Destiny's Child</td>
+      <td>Jumpin' Jumpin'</td>
+      <td>3:48</td>
+      <td>Rock</td>
+      <td>2000-05-13</td>
+      <td>2000-08-19</td>
+      <td>74</td>
+      <td>71</td>
+      <td>65</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>2000</td>
+      <td>3 Doors Down</td>
+      <td>Kryptonite</td>
+      <td>3:53</td>
+      <td>Rock</td>
+      <td>2000-04-08</td>
+      <td>2000-11-11</td>
+      <td>81</td>
+      <td>70</td>
+      <td>68</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>2000</td>
+      <td>Sisqo</td>
+      <td>Thong Song</td>
+      <td>4:05</td>
+      <td>Rock</td>
+      <td>2000-01-29</td>
+      <td>2000-05-20</td>
+      <td>74</td>
+      <td>63</td>
+      <td>35</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>2000</td>
+      <td>Aguilera, Christina</td>
+      <td>I Turn To You</td>
+      <td>4:00</td>
+      <td>Rock</td>
+      <td>2000-04-15</td>
+      <td>2000-07-01</td>
+      <td>50</td>
+      <td>39</td>
+      <td>30</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>2000</td>
+      <td>Houston, Whitney</td>
+      <td>My Love Is Your Love</td>
+      <td>4:16</td>
+      <td>Rock</td>
+      <td>1999-09-04</td>
+      <td>2000-01-08</td>
+      <td>81</td>
+      <td>68</td>
+      <td>44</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>2000</td>
+      <td>Joe</td>
+      <td>I Wanna Know</td>
+      <td>4:57</td>
+      <td>Rock</td>
+      <td>2000-01-01</td>
+      <td>2000-07-01</td>
+      <td>94</td>
+      <td>86</td>
+      <td>69</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>2000</td>
+      <td>Jordan, Montell</td>
+      <td>Get It On.. Tonite</td>
+      <td>4:34</td>
+      <td>Rap</td>
+      <td>1999-10-23</td>
+      <td>2000-02-12</td>
+      <td>92</td>
+      <td>80</td>
+      <td>72</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>287</th>
+      <td>2000</td>
+      <td>2Ge+her</td>
+      <td>The Hardest Part Of Breaking Up (Is Getting Ba...</td>
+      <td>3:15</td>
+      <td>R&amp;B</td>
+      <td>2000-09-02</td>
+      <td>2000-09-09</td>
+      <td>91</td>
+      <td>87</td>
+      <td>92</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>288</th>
+      <td>2000</td>
+      <td>Madison Avenue</td>
+      <td>Don't Call Me Baby</td>
+      <td>3:44</td>
+      <td>Electronica</td>
+      <td>2000-07-08</td>
+      <td>2000-09-16</td>
+      <td>98</td>
+      <td>96</td>
+      <td>93</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>289</th>
+      <td>2000</td>
+      <td>Eve</td>
+      <td>Got It All</td>
+      <td>3:48</td>
+      <td>Rap</td>
+      <td>2000-07-15</td>
+      <td>2000-07-22</td>
+      <td>89</td>
+      <td>88</td>
+      <td>88</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>290</th>
+      <td>2000</td>
+      <td>Limp Bizkit</td>
+      <td>Re-Arranged</td>
+      <td>4:08</td>
+      <td>Rock</td>
+      <td>1999-12-04</td>
+      <td>2000-02-05</td>
+      <td>91</td>
+      <td>91</td>
+      <td>90</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>291</th>
+      <td>2000</td>
+      <td>Spencer, Tracie</td>
+      <td>Still In My Heart</td>
+      <td>4:11</td>
+      <td>Rock</td>
+      <td>2000-03-04</td>
+      <td>2000-03-11</td>
+      <td>95</td>
+      <td>88</td>
+      <td>98</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>292</th>
+      <td>2000</td>
+      <td>Nu Flavor</td>
+      <td>3 Little Words</td>
+      <td>3:54</td>
+      <td>R&amp;B</td>
+      <td>2000-06-03</td>
+      <td>2000-06-17</td>
+      <td>97</td>
+      <td>97</td>
+      <td>89</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>293</th>
+      <td>2000</td>
+      <td>Tamar</td>
+      <td>If You Don't Wanna Love Me</td>
+      <td>4:02</td>
+      <td>Rock</td>
+      <td>2000-03-25</td>
+      <td>2000-04-15</td>
+      <td>98</td>
+      <td>98</td>
+      <td>92</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>294</th>
+      <td>2000</td>
+      <td>Levert, Gerald</td>
+      <td>Baby U Are</td>
+      <td>4:10</td>
+      <td>R&amp;B</td>
+      <td>2000-08-19</td>
+      <td>2000-08-26</td>
+      <td>96</td>
+      <td>89</td>
+      <td>92</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>295</th>
+      <td>2000</td>
+      <td>Hart, Beth</td>
+      <td>L.A. Song</td>
+      <td>3:47</td>
+      <td>Country</td>
+      <td>1999-11-27</td>
+      <td>2000-01-15</td>
+      <td>99</td>
+      <td>100</td>
+      <td>98</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>296</th>
+      <td>2000</td>
+      <td>Diffie, Joe</td>
+      <td>The Quittin' Kind</td>
+      <td>3:23</td>
+      <td>Country</td>
+      <td>2000-01-01</td>
+      <td>2000-01-22</td>
+      <td>98</td>
+      <td>100</td>
+      <td>100</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>297</th>
+      <td>2000</td>
+      <td>Funkmaster Flex</td>
+      <td>Do You</td>
+      <td>4:14</td>
+      <td>Rap</td>
+      <td>2000-11-11</td>
+      <td>2000-12-02</td>
+      <td>92</td>
+      <td>92</td>
+      <td>95</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>298</th>
+      <td>2000</td>
+      <td>Price, Kelly</td>
+      <td>Love Sets You Free</td>
+      <td>3:46</td>
+      <td>Rock</td>
+      <td>2000-05-13</td>
+      <td>2000-05-20</td>
+      <td>92</td>
+      <td>91</td>
+      <td>98</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>299</th>
+      <td>2000</td>
+      <td>En Vogue</td>
+      <td>Riddle</td>
+      <td>5:10</td>
+      <td>Rock</td>
+      <td>2000-06-17</td>
+      <td>2000-06-17</td>
+      <td>92</td>
+      <td>92</td>
+      <td>97</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>300</th>
+      <td>2000</td>
+      <td>Herndon, Ty</td>
+      <td>No Mercy</td>
+      <td>4:43</td>
+      <td>Country</td>
+      <td>2000-03-18</td>
+      <td>2000-05-06</td>
+      <td>100</td>
+      <td>99</td>
+      <td>99</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>301</th>
+      <td>2000</td>
+      <td>Anastacia</td>
+      <td>I'm Outta Love</td>
+      <td>4:01</td>
+      <td>Pop</td>
+      <td>2000-04-01</td>
+      <td>2000-04-01</td>
+      <td>92</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>302</th>
+      <td>2000</td>
+      <td>Trina</td>
+      <td>Pull Over</td>
+      <td>2:58</td>
+      <td>Rap</td>
+      <td>2000-09-09</td>
+      <td>2000-09-16</td>
+      <td>97</td>
+      <td>93</td>
+      <td>96</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>303</th>
+      <td>2000</td>
+      <td>Lil' Mo</td>
+      <td>Ta Da</td>
+      <td>4:17</td>
+      <td>Rap</td>
+      <td>2000-08-12</td>
+      <td>2000-09-16</td>
+      <td>100</td>
+      <td>99</td>
+      <td>97</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>304</th>
+      <td>2000</td>
+      <td>A*Teens</td>
+      <td>Dancing Queen</td>
+      <td>3:44</td>
+      <td>Pop</td>
+      <td>2000-07-08</td>
+      <td>2000-07-29</td>
+      <td>97</td>
+      <td>97</td>
+      <td>96</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>305</th>
+      <td>2000</td>
+      <td>Sheist, Shade</td>
+      <td>Where I Wanna Be</td>
+      <td>4:16</td>
+      <td>Rap</td>
+      <td>2000-11-11</td>
+      <td>2000-11-18</td>
+      <td>96</td>
+      <td>95</td>
+      <td>99</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>306</th>
+      <td>2000</td>
+      <td>De La Soul</td>
+      <td>All Good?</td>
+      <td>5:02</td>
+      <td>Rap</td>
+      <td>2000-12-23</td>
+      <td>2000-12-23</td>
+      <td>96</td>
+      <td>96</td>
+      <td>100</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>307</th>
+      <td>2000</td>
+      <td>Larrieux, Amel</td>
+      <td>Get Up</td>
+      <td>4:02</td>
+      <td>R&amp;B</td>
+      <td>2000-03-04</td>
+      <td>2000-03-11</td>
+      <td>100</td>
+      <td>97</td>
+      <td>97</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>308</th>
+      <td>2000</td>
+      <td>Braxton, Toni</td>
+      <td>Spanish Guitar</td>
+      <td>4:24</td>
+      <td>Rock</td>
+      <td>2000-12-02</td>
+      <td>2000-12-02</td>
+      <td>98</td>
+      <td>98</td>
+      <td>98</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>309</th>
+      <td>2000</td>
+      <td>Tuesday</td>
+      <td>I Know</td>
+      <td>4:06</td>
+      <td>Rock</td>
+      <td>2000-12-30</td>
+      <td>2000-12-30</td>
+      <td>98</td>
+      <td>98</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>310</th>
+      <td>2000</td>
+      <td>LL Cool J</td>
+      <td>Imagine That</td>
+      <td>4:00</td>
+      <td>Rap</td>
+      <td>2000-08-12</td>
+      <td>2000-08-19</td>
+      <td>99</td>
+      <td>98</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>311</th>
+      <td>2000</td>
+      <td>Master P</td>
+      <td>Souljas</td>
+      <td>3:33</td>
+      <td>Rap</td>
+      <td>2000-11-18</td>
+      <td>2000-11-18</td>
+      <td>98</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>312</th>
+      <td>2000</td>
+      <td>Ghostface Killah</td>
+      <td>Cherchez LaGhost</td>
+      <td>3:04</td>
+      <td>R&amp;B</td>
+      <td>2000-08-05</td>
+      <td>2000-08-05</td>
+      <td>98</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>313</th>
+      <td>2000</td>
+      <td>Smith, Will</td>
+      <td>Freakin' It</td>
+      <td>3:58</td>
+      <td>Rap</td>
+      <td>2000-02-12</td>
+      <td>2000-02-12</td>
+      <td>99</td>
+      <td>99</td>
+      <td>99</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>314</th>
+      <td>2000</td>
+      <td>Zombie Nation</td>
+      <td>Kernkraft 400</td>
+      <td>3:30</td>
+      <td>Rock</td>
+      <td>2000-09-02</td>
+      <td>2000-09-02</td>
+      <td>99</td>
+      <td>99</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>315</th>
+      <td>2000</td>
+      <td>Eastsidaz, The</td>
+      <td>Got Beef</td>
+      <td>3:58</td>
+      <td>Rap</td>
+      <td>2000-07-01</td>
+      <td>2000-07-01</td>
+      <td>99</td>
+      <td>99</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>316</th>
+      <td>2000</td>
+      <td>Fragma</td>
+      <td>Toca's Miracle</td>
+      <td>3:22</td>
+      <td>R&amp;B</td>
+      <td>2000-10-28</td>
+      <td>2000-10-28</td>
+      <td>99</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>317 rows × 83 columns</p>
+</div>
+New I determine which genres were the most popular by running the following code:
+```python
+genres = pd.value_counts(data['genre'])
+genres = pd.DataFrame(genres)
+genres
+```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>0</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Rock</th>
+      <td>137</td>
+    </tr>
+    <tr>
+      <th>Country</th>
+      <td>74</td>
+    </tr>
+    <tr>
+      <th>Rap</th>
+      <td>58</td>
+    </tr>
+    <tr>
+      <th>R&amp;B</th>
+      <td>23</td>
+    </tr>
+    <tr>
+      <th>Pop</th>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>Latin</th>
+      <td>9</td>
+    </tr>
+    <tr>
+      <th>Electronica</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Reggae</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Jazz</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Gospel</th>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+From the output we can see that the top three genres of music are: Rock, Country, and Rap. Which may not be exactly representative with ho other may classify their music. For instance - the most popular song, in terms of time at the #1 spot, Destiny’s Child - Independent Women Part I is categorized as rock. 
+```python
+# del track['year'] 
+track_at_1 = track.stack()
+track_at_1 = pd.DataFrame(track_at_1)
+track_at_1.columns = ['rank']
+track_at_1 = track_at_1[ track_at_1['rank'] == 1 ]
+track_at_1
+```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th></th>
+      <th>rank</th>
+    </tr>
+    <tr>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Aaliyah</th>
+      <th>Try Again</th>
+      <th>x14th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="6" valign="top">Aguilera, Christina</th>
+      <th rowspan="4" valign="top">Come On Over Baby (All I Want Is You)</th>
+      <th>x11th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x12th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x14th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">What A Girl Wants</th>
+      <th>x8th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x9th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Carey, Mariah</th>
+      <th>Thank God I Found You</th>
+      <th>x11th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Creed</th>
+      <th>With Arms Wide Open</th>
+      <th>x27th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="14" valign="top">Destiny's Child</th>
+      <th rowspan="11" valign="top">Independent Women Part I</th>
+      <th>x10th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x11th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x12th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x14th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x15th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x16th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x17th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x18th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x19th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x9th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">Say My Name</th>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x14th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x15th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">Iglesias, Enrique</th>
+      <th rowspan="3" valign="top">Be With You</th>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x14th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x15th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">Janet</th>
+      <th rowspan="3" valign="top">Doesn't Really Matter</th>
+      <th>x11th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x12th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">Lonestar</th>
+      <th rowspan="2" valign="top">Amazed</th>
+      <th>x40th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x41st.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="4" valign="top">Madonna</th>
+      <th rowspan="4" valign="top">Music</th>
+      <th>x6th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x7th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x8th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x9th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">N'Sync</th>
+      <th rowspan="2" valign="top">It's Gonna Be Me</th>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x14th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="10" valign="top">Santana</th>
+      <th rowspan="10" valign="top">Maria, Maria</th>
+      <th>x10th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x11th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x12th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x14th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x15th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x16th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x17th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x18th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x9th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="4" valign="top">Savage Garden</th>
+      <th rowspan="4" valign="top">I Knew I Loved You</th>
+      <th>x15th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x16th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x17th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x19th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">Sisqo</th>
+      <th rowspan="2" valign="top">Incomplete</th>
+      <th>x8th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>x9th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>Vertical Horizon</th>
+      <th>Everything You Want</th>
+      <th>x26th.week</th>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>matchbox twenty</th>
+      <th>Bent</th>
+      <th>x13th.week</th>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+![alt text](https://raw.githubusercontent.com/isaacmoore/DSI_SM_Project2/master/number1_songs.png "Destiny's Child - Independent Woman climb to #1")
+![alt text](https://raw.githubusercontent.com/isaacmoore/DSI_SM_Project2/master/most_popular_genre.png "Popular Genres")
+
+
+Compared to Jay-Z who had the most songs on the billboard for 2010, which is categorized as Rap. 
+
+```python
+artists = pd.value_counts(data['artist.inverted'])
+artists = pd.DataFrame(artists)
+print artists.head(20)
+```
+
+                          artist.inverted
+    Jay-Z                               5
+    Houston, Whitney                    4
+    Dixie Chicks, The                   4
+    DMX                                 3
+    Aguilera, Christina                 3
+    McGraw, Tim                         3
+    Backstreet Boys, The                3
+    Thomas, Carl                        3
+    N'Sync                              3
+    Destiny's Child                     3
+    SheDaisy                            3
+    Sisqo                               3
+    Braxton, Toni                       3
+    Limp Bizkit                         3
+    Price, Kelly                        3
+    Spears, Britney                     3
+    Rimes, LeAnn                        3
+    Eminem                              3
+    Lonestar                            3
+    Martin, Ricky                       3
+
+
+The songs that Jay-Z had on the billboard were: 
+
+```python
+data[ data['artist.inverted'] == 'Jay-Z' ]
+```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th>time</th>
+      <th>genre</th>
+      <th>date.entered</th>
+      <th>date.peaked</th>
+      <th>x1st.week</th>
+      <th>x2nd.week</th>
+      <th>x3rd.week</th>
+      <th>...</th>
+      <th>x67th.week</th>
+      <th>x68th.week</th>
+      <th>x69th.week</th>
+      <th>x70th.week</th>
+      <th>x71st.week</th>
+      <th>x72nd.week</th>
+      <th>x73rd.week</th>
+      <th>x74th.week</th>
+      <th>x75th.week</th>
+      <th>x76th.week</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>57</th>
+      <td>2000</td>
+      <td>Jay-Z</td>
+      <td>I Just Wanna Love U (Give It 2 Me)</td>
+      <td>3:50</td>
+      <td>Rap</td>
+      <td>2000-10-28</td>
+      <td>2000-12-30</td>
+      <td>58</td>
+      <td>45</td>
+      <td>35</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>71</th>
+      <td>2000</td>
+      <td>Jay-Z</td>
+      <td>Big Pimpin'</td>
+      <td>3:55</td>
+      <td>Rap</td>
+      <td>2000-04-22</td>
+      <td>2000-07-08</td>
+      <td>69</td>
+      <td>52</td>
+      <td>39</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>192</th>
+      <td>2000</td>
+      <td>Jay-Z</td>
+      <td>Anything</td>
+      <td>3:41</td>
+      <td>Rap</td>
+      <td>2000-02-26</td>
+      <td>2000-03-11</td>
+      <td>72</td>
+      <td>58</td>
+      <td>55</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>226</th>
+      <td>2000</td>
+      <td>Jay-Z</td>
+      <td>Do It Again (Put Ya Hands Up)</td>
+      <td>3:47</td>
+      <td>Rap</td>
+      <td>2000-01-15</td>
+      <td>2000-01-29</td>
+      <td>95</td>
+      <td>68</td>
+      <td>65</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>264</th>
+      <td>2000</td>
+      <td>Jay-Z</td>
+      <td>Hey Papi</td>
+      <td>3:40</td>
+      <td>Rap</td>
+      <td>2000-08-12</td>
+      <td>2000-10-07</td>
+      <td>98</td>
+      <td>100</td>
+      <td>98</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 83 columns</p>
+</div>
+
+After answering that question - I was curious to see which song lasted on the billboard Top 100 the longest, the results were not what I expected.  
+
+- Number One was Creed - Higher lasted the longest on the Billboard for 58 weeks. 
+- Number Two was Lonestar - Amazed for 56 weeks.
+- And a tie for third at 54 weeks:
+      - Faith Hill - Breathe
+      - 3 Doors Down - Kryptonite
+
+```python
+track = pd.pivot_table(data, index=['artist.inverted', 'track'])
+weeks_on_bb = pd.DataFrame(track.notnull().sum(axis=1))
+weeks_on_bb.columns = ['time_on_bb']
+weeks_on_bb.sort('time_on_bb', ascending=False)
+```
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>time_on_bb</th>
+    </tr>
+    <tr>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Creed</th>
+      <th>Higher</th>
+      <td>58</td>
+    </tr>
+    <tr>
+      <th>Lonestar</th>
+      <th>Amazed</th>
+      <td>56</td>
+    </tr>
+    <tr>
+      <th>Hill, Faith</th>
+      <th>Breathe</th>
+      <td>54</td>
+    </tr>
+    <tr>
+      <th>3 Doors Down</th>
+      <th>Kryptonite</th>
+      <td>54</td>
+    </tr>
+    <tr>
+      <th>Creed</th>
+      <th>With Arms Wide Open</th>
+      <td>48</td>
+    </tr>
+    <tr>
+      <th>Joe</th>
+      <th>I Wanna Know</th>
+      <td>45</td>
+    </tr>
+    <tr>
+      <th>Vertical Horizon</th>
+      <th>Everything You Want</th>
+      <td>42</td>
+    </tr>
+    <tr>
+      <th>matchbox twenty</th>
+      <th>Bent</th>
+      <td>40</td>
+    </tr>
+    <tr>
+      <th>Braxton, Toni</th>
+      <th>He Wasn't Man Enough</th>
+      <td>38</td>
+    </tr>
+    <tr>
+      <th>Nelly</th>
+      <th>(Hot S**t) Country Grammar</th>
+      <td>35</td>
+    </tr>
+    <tr>
+      <th>Savage Garden</th>
+      <th>I Knew I Loved You</th>
+      <td>34</td>
+    </tr>
+    <tr>
+      <th>Aaliyah</th>
+      <th>Try Again</th>
+      <td>33</td>
+    </tr>
+    <tr>
+      <th>Anthony, Marc</th>
+      <th>You Sang To Me</th>
+      <td>33</td>
+    </tr>
+    <tr>
+      <th>Pink</th>
+      <th>There U Go</th>
+      <td>33</td>
+    </tr>
+    <tr>
+      <th>Jordan, Montell</th>
+      <th>Get It On.. Tonite</th>
+      <td>33</td>
+    </tr>
+    <tr>
+      <th rowspan="2" valign="top">Destiny's Child</th>
+      <th>Jumpin' Jumpin'</th>
+      <td>33</td>
+    </tr>
+    <tr>
+      <th>Say My Name</th>
+      <td>33</td>
+    </tr>
+    <tr>
+      <th>BBMak</th>
+      <th>Back Here</th>
+      <td>32</td>
+    </tr>
+    <tr>
+      <th>Mya</th>
+      <th>Case Of The Ex (Whatcha Gonna Do)</th>
+      <td>31</td>
+    </tr>
+    <tr>
+      <th>Amber</th>
+      <th>Sexual (Li Da Di)</th>
+      <td>30</td>
+    </tr>
+    <tr>
+      <th>Blaque</th>
+      <th>Bring It All To Me</th>
+      <td>30</td>
+    </tr>
+    <tr>
+      <th>Dream</th>
+      <th>He Loves U Not</th>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>Houston, Whitney</th>
+      <th>My Love Is Your Love</th>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>Sisqo</th>
+      <th>Thong Song</th>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>Dion, Celine</th>
+      <th>That's The Way It Is</th>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>Destiny's Child</th>
+      <th>Independent Women Part I</th>
+      <td>29</td>
+    </tr>
+    <tr>
+      <th>Gray, Macy</th>
+      <th>I Try</th>
+      <td>28</td>
+    </tr>
+    <tr>
+      <th>Train</th>
+      <th>Meet Virginia</th>
+      <td>28</td>
+    </tr>
+    <tr>
+      <th>Pink</th>
+      <th>Most Girls</th>
+      <td>28</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">Nine Days</th>
+      <th>Absolutely (Story Of A Girl)</th>
+      <td>28</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>If I Am</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Martin, Ricky</th>
+      <th>Private Emotion</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Tamia</th>
+      <th>Can't Go For That</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Sheist, Shade</th>
+      <th>Where I Wanna Be</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>A*Teens</th>
+      <th>Dancing Queen</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>D'Angelo</th>
+      <th>Left &amp; Right</th>
+      <td>6</td>
+    </tr>
+    <tr>
+      <th>Price, Kelly</th>
+      <th>Love Sets You Free</th>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Hollister, Dave</th>
+      <th>Can't Stay</th>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Smith, Will</th>
+      <th>Freakin' It</th>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>En Vogue</th>
+      <th>Riddle</th>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Trina</th>
+      <th>Pull Over</th>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Paisley, Brad</th>
+      <th>Me Neither</th>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>LFO</th>
+      <th>West Side Story</th>
+      <td>5</td>
+    </tr>
+    <tr>
+      <th>Anastacia</th>
+      <th>I'm Outta Love</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Bega, Lou</th>
+      <th>Tricky Tricky</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>De La Soul</th>
+      <th>All Good?</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Spencer, Tracie</th>
+      <th>Still In My Heart</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Braxton, Toni</th>
+      <th>Spanish Guitar</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Brock, Chad</th>
+      <th>A Country Boy Can Survive</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Larrieux, Amel</th>
+      <th>Get Up</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>2Ge+her</th>
+      <th>The Hardest Part Of Breaking Up (Is Getting Back Your Stuff)</th>
+      <td>4</td>
+    </tr>
+    <tr>
+      <th>Tuesday</th>
+      <th>I Know</th>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Eastsidaz, The</th>
+      <th>Got Beef</th>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>SheDaisy</th>
+      <th>Deck The Halls</th>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Zombie Nation</th>
+      <th>Kernkraft 400</th>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>LL Cool J</th>
+      <th>Imagine That</th>
+      <td>3</td>
+    </tr>
+    <tr>
+      <th>Estefan, Gloria</th>
+      <th>No Me Dejes De Querer</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Ghostface Killah</th>
+      <th>Cherchez LaGhost</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Master P</th>
+      <th>Souljas</th>
+      <td>2</td>
+    </tr>
+    <tr>
+      <th>Fragma</th>
+      <th>Toca's Miracle</th>
+      <td>2</td>
+    </tr>
+  </tbody>
+</table>
+<p>317 rows × 1 coumns</p>
+</div>
+
+To dig a little deeper into the some of the statistics of how long songs lasted on the Billboard Top 100:  
+
+```python
+print 'Summary Statistics \n' + str(weeks_on_bb['time_on_bb'].describe())
+```
+
+    Summary Statistics 
+    count    317.000000
+    mean      17.741325
+    std        9.083785
+    min        2.000000
+    25%       11.000000
+    50%       19.000000
+    75%       21.000000
+    max       58.000000
+    Name: time_on_bb, dtype: float64
+
+From the summary statistics above we can see the average time spent on the Billboard Top 100 was 17.74 Weeks. The standard deviation was 9.08, meaning that the data is not very spread out - most songs were pretty close to the mean.
+
+But is there any relation to how long a song lasts on the Billboard Top 100 and the length of the songs?
+To answer that question - I begin by converting the length of all track to seconds. 
+
+```python
+new_time = []
+for i in data['time']:
+    new_time.append((int(i[0]) * 60) + (int(i[2:])))
+
+data['time'] = new_time
+data.rename(columns={'time':'time_seconds'}, inplace=True)
+print data.head(3)
+```
+
+
+
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>year</th>
+      <th>artist.inverted</th>
+      <th>track</th>
+      <th>time_seconds</th>
+      <th>genre</th>
+      <th>date.entered</th>
+      <th>date.peaked</th>
+      <th>x1st.week</th>
+      <th>x2nd.week</th>
+      <th>x3rd.week</th>
+      <th>...</th>
+      <th>x67th.week</th>
+      <th>x68th.week</th>
+      <th>x69th.week</th>
+      <th>x70th.week</th>
+      <th>x71st.week</th>
+      <th>x72nd.week</th>
+      <th>x73rd.week</th>
+      <th>x74th.week</th>
+      <th>x75th.week</th>
+      <th>x76th.week</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>2000</td>
+      <td>Destiny's Child</td>
+      <td>Independent Women Part I</td>
+      <td>218</td>
+      <td>Rock</td>
+      <td>2000-09-23</td>
+      <td>2000-11-18</td>
+      <td>78</td>
+      <td>63</td>
+      <td>49</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>2000</td>
+      <td>Santana</td>
+      <td>Maria, Maria</td>
+      <td>258</td>
+      <td>Rock</td>
+      <td>2000-02-12</td>
+      <td>2000-04-08</td>
+      <td>15</td>
+      <td>8</td>
+      <td>6</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2000</td>
+      <td>Savage Garden</td>
+      <td>I Knew I Loved You</td>
+      <td>247</td>
+      <td>Rock</td>
+      <td>1999-10-23</td>
+      <td>2000-01-29</td>
+      <td>71</td>
+      <td>48</td>
+      <td>43</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>3 rows × 83 columns</p>
+</div>
+
+Since I had already determined how long each track was onthe Billboard Top 100, all I had to do was to do a scatter plot of the econds of each song against the amount of time on the Billboard Top 100.
+
+```python
+# Correlation between song length and time on charts
+sns.regplot(x=data['time_seconds'], y=weeks_on_bb['time_on_bb']).set(title='Correlation between song length (seconds)\n and time (weeks) on the Billboard Top 100', xlabel='Length of song (seconds)', ylabel='Time on Billboard (weeks)')
+```
+![alt text](https://raw.githubusercontent.com/isaacmoore/DSI_SM_Project2/master/correlation_songlength_timeoncharts.png "Correlation between song length and time on charts")
+
+Since the regression line is flat, there was no correlation between song length and how long a song lasted on the Billboard Top 100. 
+
+I hope you enjoyed my analysis of the songs from 2000 on the Billboard Top 100!
+
+Thank you for reading.
+-Isaac Moore
