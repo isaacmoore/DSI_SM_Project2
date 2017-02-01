@@ -15,7 +15,7 @@ library("lubridate")
 ###Step 1: Exploring your data.
 **Load your data in using Pandas and start to explore. Save all of your early exploration code here and include in your final submission.**
 ```{r}
-data <- tbl_df(read.csv('billboard.csv'))
+data <- tbl_df(read.csv('billboard.csv', stringsAsFactors = F))
 head(data)
 ```
 
@@ -92,8 +92,97 @@ convert_time <- function(x){
 data$time_seconds <- lapply(data$time, convert_time)
 ```
 
-*Finding the most popular track for 2010 - in terms of amount of time on the billboard.*
+*Finding the most popular track for 2010 - in terms of amount of time on the billboard.*  
+First I will tidy the data, using the Hadley Wickam's dity data principles.
 ```{r}
-
+data2 <- data %>% 
+  gather(week, rank, x1st.week:x76th.week, na.rm = TRUE)
 ```
+Since each observation is a week on the dataset, all I have to do now is create a srted table of the artists.
+```{r}
+popular_tracks <- sort(table(data2$track), decreasing = T)
+head(popular_tracks, n = 15)
+```
+
+*Finding the average amount of time a songs was on the billboard.*
+```{r}
+popular_tracks2 <- c()
+for (i in popular_tracks){
+        # print(i)
+  popular_tracks2 <- c(popular_tracks2, i)
+}
+summary(popular_tracks2)
+```
+
+*#1 tracks for 2010*
+```{r}
+top_tracks <- data2 %>% filter(rank == 1) 
+top_tracks
+```
+```{r}
+top_tracks %>% count(artist.inverted) %>% arrange(desc(n))
+top_tracks %>% count(track) %>% arrange(desc(n))
+```
+
+###Step 2: Clean your data.
+Do some rudimentary cleaning. Rename any columns that are poorly named, shorten any strings that may be too long, fill in any missing values. Explain your rationale for the way you choose to "impute" the missing data.
+```{r}
+colnames(data2) <- c("year", "artists", "track", "time", "genre", "date_enter", "date_peak", "time_secs", "week", "rank")
+colnames(data2)
+```
+
+```{r}
+data2$time_secs <- as.numeric(data2$time_secs)
+summary(data2$time_secs)
+```
+
+```{r}
+class(data2$date_enter)
+class(data2$date_peak)
+```
+```{r}
+data2$date_enter <- ymd(data2$date_enter)
+data2$date_peak <- ymd(data2$date_peak)
+```
+
+```{r}
+class(data2$date_enter)
+class(data2$date_peak)
+```
+
+```{r}
+glimpse(data2)
+```
+
+### Step 3: Visualize your data.
+*Using a plotting utility of your choice (Tableau or python modules or both), create visualizations that will provide context to your data. There is no minimum or maximum number of graphs you should generate, but there should be a clear and consistent story being told. Give insights to the distribution, statistics, and relationships of the data.*
+
+```{r}
+# Visualize most popular genre
+ggplot(data2, aes(genre)) + geom_histogram(stat = "count") + ggtitle('Number of Songs per Genre on the \n Billboard Top 100 in 2010')
+```
+
+```{r}
+# Correlation between song length and rank
+time_on_bb <- data2 %>% select(track, time_secs, rank) %>% 
+        group_by(track) %>% 
+                mutate(time_on_bbs = n_distinct(rank)) %>% 
+                        arrange(desc(time_on_bbs))
+
+ggplot(time_on_bb, aes(time_secs, time_on_bbs)) + geom_point() + geom_smooth() + ggtitle('Correlation between song length (seconds)\n and time (weeks) on the Billboard Top 100')
+```
+
+```{r}
+# Genres and mean length of song
+avg_song_genre <- data2 %>% group_by(genre) %>% summarise(avg_length = mean(time_secs))
+ggplot(avg_song_genre, aes(x = genre, y = avg_length)) + geom_bar(stat = "identity") + labs(title='Average song length per Genre', ylabel='Average length of song (seconds)', xlabel=' Genre')
+```
+
+```{r}
+# Independent Women
+ind_wom <- filter(data2, track == "Independent Women Part I") 
+ind_wom$week <- readr::parse_number(ind_wom$week)
+ggplot(ind_wom, aes(x = week, y = rank)) + geom_line() + labs(title='Destiny\'s Child - Independent Women Part I\n time on the Billboard Top 100', xlabel='Weeks', ylabel='Rank')
+```
+
 
