@@ -96,7 +96,7 @@ data$time_seconds <- lapply(data$time, convert_time)
 First I will tidy the data, using the Hadley Wickam's dity data principles.
 ```{r}
 data2 <- data %>% 
-  gather(week, rank, x1st.week:x76th.week, na.rm = TRUE)
+  tidyr::gather(week, rank, x1st.week:x76th.week, na.rm = TRUE)
 ```
 Since each observation is a week on the dataset, all I have to do now is create a srted table of the artists.
 ```{r}
@@ -166,10 +166,10 @@ ggplot(data2, aes(genre)) + geom_histogram(stat = "count") + ggtitle('Number of 
 # Correlation between song length and rank
 time_on_bb <- data2 %>% select(track, time_secs, rank) %>% 
         group_by(track) %>% 
-                mutate(time_on_bbs = n_distinct(rank)) %>% 
+                mutate(time_on_bbs = n()) %>% 
                         arrange(desc(time_on_bbs))
 
-ggplot(time_on_bb, aes(time_secs, time_on_bbs)) + geom_point() + geom_smooth() + ggtitle('Correlation between song length (seconds)\n and time (weeks) on the Billboard Top 100')
+ggplot(time_on_bb, aes(time_secs, time_on_bbs)) + geom_point() + geom_smooth(method = lm) + ggtitle('Correlation between song length (seconds)\n and time (weeks) on the Billboard Top 100') + ylab("Weeks on Billboard Top 100") + xlab("Length of track (seconds)")
 ```
 
 ```{r}
